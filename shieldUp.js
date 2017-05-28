@@ -1,14 +1,13 @@
-var height = 600;
-var width = 600;
-var player;
-var bubbles = [];
-var bubbleInterval = 500; // how often should bubbles spawn in ms
-var score = 0;
-var bestScore = 0;
-var paused = true;
-var gameOver = false;
-var oldFrameCount;
-var oldTime;
+var height = 600, width = 600,
+player,
+bubbles = [], bubbleInterval = 500, bubbleSpeed = 10,
+score = 0, bestScore = 0,
+paused = true, gameOver = false,
+oldTime,
+actualFps = 0, FpsMiddleVal = 0, FpsTimerNew = Date.now(),
+ FpsTimerOld = FpsTimerNew-1,
+loops = 0, skipTicks = 1000/60,
+    maxFrameSkip = 10, nextGameTick = Date.now();
 function setup() {
     oldTime = Date.now();
     height = 600;
@@ -16,12 +15,6 @@ function setup() {
     var canvas = createCanvas(width, height);
     player= new Player(width/2, height/2);
 }
-var actualFps = 0;
-var FpsMiddleVal = 0;
-var FpsTimerNew = Date.now();
-var FpsTimerOld = FpsTimerNew-1;
-var loops = 0, skipTicks = 1000/60,
-    maxFrameSkip = 10, nextGameTick = Date.now();
 function draw() {  // a.k.a. gameloop
     FpsTimerNew = Date.now();
     FpsMiddleVal++;
@@ -44,8 +37,23 @@ function draw() {  // a.k.a. gameloop
     text("Best Score: "+bestScore,width-5,5);
     textAlign(RIGHT,BOTTOM);
     text("FPS: "+actualFps,width-5,height);
-    textAlign(LEFT);
 
+    if (paused) {
+        textAlign(CENTER,CENTER);
+        textSize(50);
+        if (!gameOver){
+            text("Game Paused",width/2, height/2);
+            textSize(32);
+            text("Press Space to continue.",width/2,height/2+50);
+            textSize(16);
+            text("Use arrow keys (or hjkl if you are a vim wizard) to move your shield to stop bubbles from getting you wet.",0,150,width,height);
+        }
+        else {
+            text("YOU LOST",width/2, height/2);
+            textSize(32);
+            text("Press Space try again.",width/2,height/2+50);
+        }
+    }
     loops = 0;
     while (Date.now() > nextGameTick && loops < maxFrameSkip){
         // logic
@@ -69,25 +77,7 @@ function draw() {  // a.k.a. gameloop
             }
         }
     }
-    else {
-        textAlign(CENTER,CENTER);
-        textSize(50);
-        if (!gameOver){
-            text("Game Paused",width/2, height/2);
-            textSize(32);
-            text("Press Space to continue.",width/2,height/2+50);
-            textSize(16);
-            text("Use arrow keys (or hjkl if you are a vim wizard) to move your shield to stop bubbles from getting you wet.",0,150,width,height);
-        }
-        else {
-            text("YOU LOST",width/2, height/2);
-            textSize(32);
-            text("Press Space try again.",width/2,height/2+50);
-        }
-        textAlign(LEFT,TOP);
-
-    }
-        nextGameTick += skipTicks;
+            nextGameTick += skipTicks;
         loops++;
     }
 }
@@ -121,6 +111,7 @@ function pause() {
     } else {
         oldTime = Date.now();
     }
+    nextGameTick = Date.now()+skipTicks;
     paused = !paused;
 }
 function restartGame() {

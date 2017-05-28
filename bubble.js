@@ -1,10 +1,11 @@
+
 function Bubble(dir){
     this.x = width/2;
     this.y = height-25;
     this.vel = new createVector(0,-1);
     this.dir = dir;
     this.radius = 15; // its actually diameter...
-    this.speed = 10;
+    this.speed = bubbleSpeed;
 
     this.init = function (){
         if (this.dir == 0){
