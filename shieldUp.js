@@ -1,6 +1,6 @@
 var height = 600, width = 600,
 player,
-bubbles = [], bubbleInterval = 500, bubbleSpeed = 10,
+bubbles = [], bubbleInterval = 300, bubbleSpeed = 8,
 score = 0, bestScore = 0,
 paused = true, gameOver = false,
 oldTime,
