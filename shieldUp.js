@@ -16,7 +16,20 @@ function setup() {
     var canvas = createCanvas(width, height);
     player= new Player(width/2, height/2);
 }
-function draw() {
+var actualFps = 0;
+var FpsMiddleVal = 0;
+var FpsTimerNew = Date.now();
+var FpsTimerOld = FpsTimerNew-1;
+var loops = 0, skipTicks = 1000/60,
+    maxFrameSkip = 10, nextGameTick = Date.now();
+function draw() {  // a.k.a. gameloop
+    FpsTimerNew = Date.now();
+    FpsMiddleVal++;
+    if (FpsTimerNew >= FpsTimerOld+1000){
+        actualFps = Math.floor(FpsMiddleVal/((FpsTimerNew-FpsTimerOld)/1000));
+        FpsTimerOld = FpsTimerNew;
+        FpsMiddleVal = 0;
+    }
     // drawing stuff
     background(255);
     player.draw(); // draw rect, 1 side of rect, circle inside
@@ -25,12 +38,17 @@ function draw() {
     }
     fill(0);
     textSize(16);
+    textAlign(LEFT, TOP);
     text("Score: "+score,5,5);
-    textAlign(RIGHT);
+    textAlign(RIGHT,TOP);
     text("Best Score: "+bestScore,width-5,5);
+    textAlign(RIGHT,BOTTOM);
+    text("FPS: "+actualFps,width-5,height);
     textAlign(LEFT);
 
-    // logic
+    loops = 0;
+    while (Date.now() > nextGameTick && loops < maxFrameSkip){
+        // logic
     if (!paused){
         if (oldTime <= Date.now()-bubbleInterval){
             oldTime = Date.now();
@@ -68,6 +86,9 @@ function draw() {
         }
         textAlign(LEFT,TOP);
 
+    }
+        nextGameTick += skipTicks;
+        loops++;
     }
 }
 function keyPressed(){
